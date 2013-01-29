@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
     <jmxConfigurator/>
     <contextName>polyglot-persistence</contextName>
 
+    <!-- dump status message on the console as they arrive -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <property name="root.log" value="target/logs/"/>
     <property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>
+
+
+    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+        <!--<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+        <!--<pattern>${log.format}</pattern>-->
+        <!--</encoder>-->
+
+        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
+            <bufferSize>1</bufferSize>
+        </cyclicBufferTracker>
+
+        <!--<filter class="ru.korus.tmis.util.ExceptionFilter">-->
+        <!--<exceptionClassName>java.lang.Exception</exceptionClassName>-->
+        <!--</filter>-->
+
+        <!--<evaluator class="chapters.appenders.mail.CounterBasedEvaluator" />-->
+
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+        <!--<level>ERROR</level>-->
+        <!--</filter>-->
+
+
+        <!-- For example you can configure that only error messages are mailed -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+
+        <!--<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+            <layout class="ch.qos.logback.classic.html.HTMLLayout">
+                <pattern>%relative%thread%mdc%level%logger%msg</pattern>
+            </layout>
+        <!--</encoder>-->
+
+        <smtpPort>587</smtpPort>
+        <STARTTLS>true</STARTTLS>
+        <username>nnm921@gmail.com</username>
+        <password>dallas921</password>
+
+        <SmtpHost>smtp.gmail.com</SmtpHost>
+        <To>nnm921@gmail.com</To>
+        <From>nnm921@gmail.com</From>
+        <subject>%logger{20} - %m</subject>
+
+
+    </appender>
 
 
     <!-- Основные настройки для консоли, для эксепшен лога-->
@@ -21,7 +71,7 @@
             <onMismatch>ACCEPT</onMismatch>
         </filter>
         <encoder>
-            <pattern>${root.log}</pattern>
+            <pattern>${log.format}</pattern>
         </encoder>
         <param name="target" value="System.out"/>
         <target>System.out</target>
@@ -40,7 +90,7 @@
         </filter>
 
         <encoder>
-            <pattern>${root.log}</pattern>
+            <pattern>${log.format}</pattern>
         </encoder>
         <param name="target" value="System.err"/>
         <target>System.err</target>
@@ -62,22 +112,30 @@
         </rollingPolicy>
 
         <encoder>
-            <pattern>${root.log}</pattern>
+            <pattern>${log.format}</pattern>
         </encoder>
     </appender>
 
-    <!--Настройки для tmis-->
+
+    <root level="INFO">
+        <appender-ref ref="EMAIL"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </root>
+
+
     <!--Общий логгер для всего проекта-->
-    <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}tmis-core/core.log</file>
+    <appender name="MAIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${root.log}core/core.log</file>
         <encoder>
-            <pattern>${root.log}</pattern>
+            <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${root.log}core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -86,64 +144,11 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ru.korus.tmis" level="INFO" additivity="false">
-        <appender-ref ref="TMIS"/>
+    <logger name="ru.nde" level="INFO" additivity="false">
+        <appender-ref ref="MAIN"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
-
-
-
-    <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}auth/auth.log</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
-            <charset>UTF8</charset>
-        </encoder>
-    </appender>
-    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor" level="INFO" additivity="false">
-        <appender-ref ref="AUTH"/>
-    </logger>
-
-    <appender name="SERVICES" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}services/services.log</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
-            <charset>UTF8</charset>
-        </encoder>
-    </appender>
-    <!-- additivity=false ensures analytics data only goes to the analytics log -->
-    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO"
-            additivity="false">
-        <appender-ref ref="SERVICES"/>
-    </logger>
-
-    <appender name="DEBUGLOG" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}debug/debug.log</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
-            <charset>UTF8</charset>
-        </encoder>
-    </appender>
-    <!--
-    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO" additivity="true">
-        <appender-ref ref="DEBUGLOG"/>
-    </logger>
-    -->
-    <logger name="ru.korus.tmis.core.logging._LoggingInterceptor_Serializable" level="INFO" additivity="false">
-        <appender-ref ref="DEBUGLOG"/>
-    </logger>
-    <!--
-    <root level="INFO">
-        <appender-ref ref="DEBUGLOG" />
-    </root>
-    -->
-
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="STDOUT_ERROR"/>
-        <appender-ref ref="EXCEPTIONS"/>
-    </root>
 
 </configuration>
