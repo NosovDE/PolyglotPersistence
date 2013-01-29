@@ -19,10 +19,12 @@
         <!--<exceptionClassName>java.lang.Exception</exceptionClassName>-->
         <!--</filter>-->
 
-        <evaluator class="ru.nde.utils.logs.CounterBasedEvaluator" />
+        <evaluator class="ru.nde.utils.logs.CounterBasedEvaluator">
+            <countMessage>20</countMessage>
+        </evaluator>
 
         <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
-            <!--<level>ERROR</level>-->
+        <!--<level>ERROR</level>-->
         <!--</filter>-->
 
 

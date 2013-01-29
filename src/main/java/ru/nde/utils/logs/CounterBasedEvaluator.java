@@ -13,9 +13,9 @@ import ch.qos.logback.core.spi.ContextAwareBase;
 public class CounterBasedEvaluator extends ContextAwareBase implements EventEvaluator {
 
     static int LIMIT = 10;
-    int counter = 0;
-    String name;
-    boolean started;
+    private int counter = 0;
+    private String name;
+    private boolean started;
 
     public boolean evaluate(Object event) throws NullPointerException, EvaluationException {
         counter++;
@@ -26,6 +26,14 @@ public class CounterBasedEvaluator extends ContextAwareBase implements EventEval
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void setCountMessage(final String countMessage) {
+        try {
+            LIMIT = Integer.parseInt(countMessage);
+        } catch (NumberFormatException e) {
+            LIMIT = 10;
         }
     }
 
