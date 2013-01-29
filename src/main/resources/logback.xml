@@ -19,7 +19,7 @@
         <!--<exceptionClassName>java.lang.Exception</exceptionClassName>-->
         <!--</filter>-->
 
-        <!--<evaluator class="chapters.appenders.mail.CounterBasedEvaluator" />-->
+        <evaluator class="ru.nde.utils.logs.CounterBasedEvaluator" />
 
         <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
             <!--<level>ERROR</level>-->
