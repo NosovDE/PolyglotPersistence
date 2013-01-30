@@ -25,6 +25,7 @@
 
         <log.level>INFO</log.level>
         <log.root>logs/</log.root>
+        <log.root.test>logs-test/</log.root.test>
         <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
 
         <!--library versions-->

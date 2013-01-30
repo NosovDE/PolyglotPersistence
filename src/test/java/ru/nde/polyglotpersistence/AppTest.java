@@ -1,5 +1,7 @@
 package ru.nde.polyglotpersistence;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -10,16 +12,13 @@ import org.testng.annotations.Test;
  * Description: <br>
  */
 public class AppTest {
-    /**
-     * RCS (CVS/SVN) information
-     */
-    @SuppressWarnings("unused")
-    public static final String RCS_ID = "$Id$";
+    final static Logger logger = LoggerFactory.getLogger(AppTest.class);
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void start() {
-        MongoDB mongoDB = new MongoDB();
-        mongoDB.start();
+        for (int i = 0; i < 20; i++) {
+            logger.info("" + i + "). Test");
+        }
     }
 
 }
